@@ -9,10 +9,10 @@ import {
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Response } from 'express';
-import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
-import { Public } from './public.decorator';
-import { CurrentUser, CurrentUserPayload } from './current-user.decorator';
+import { AuthService } from '../services/auth.service';
+import { LoginDto } from '../dto/login.dto';
+import { Public } from '../decorators/public.decorator';
+import { CurrentUser, CurrentUserPayload } from '../decorators/current-user.decorator';
 
 @Controller('auth')
 export class AuthController {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowDownLeft, ArrowUpRight, Scale } from 'lucide-react';
-import { ResumoGrupo } from '../types';
-import { formatCurrency } from '../lib/format';
+import { ResumoGrupo } from '@/types';
+import { formatCurrency } from '@/lib/format';
 
 interface ResumoCardsProps {
   receber: ResumoGrupo;

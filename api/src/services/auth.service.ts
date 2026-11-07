@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { UsuariosRepository } from '../usuarios/usuarios.repository';
-import { LoginDto } from './dto/login.dto';
+import { UsuariosRepository } from '../repositories/usuarios.repository';
+import { LoginDto } from '../dto/login.dto';
 
 // Hash dummy para manter o tempo de resposta uniforme contra enumeração
 const DUMMY_HASH = '$2a$10$e8O0BwK6W8bF9H0uP6vQge7O9bH5k6a7L8uP9q0w1e2r3t4y5u6i.';

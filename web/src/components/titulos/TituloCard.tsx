@@ -1,7 +1,7 @@
 import React from 'react';
-import { TituloItem } from '../types';
-import { formatCurrency, formatDate } from '../lib/format';
-import { StatusBadge } from './StatusBadge';
+import { TituloItem } from '@/types';
+import { formatCurrency, formatDate } from '@/lib/format';
+import { StatusBadge } from '../ui/StatusBadge';
 
 interface TituloCardProps {
   titulo: TituloItem;

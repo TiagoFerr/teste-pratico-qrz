@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database/database.service';
+import { DatabaseService } from '../services/database.service';
+import { UsuarioComFornecedor } from '../interfaces/usuario.interface';
 
-export interface UsuarioComFornecedor {
-  seqpessoa: number;
-  nomerazao: string;
-  senha_hash: string;
-}
+export { UsuarioComFornecedor };
 
 @Injectable()
 export class UsuariosRepository {

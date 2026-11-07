@@ -29,19 +29,29 @@ teste-pratico-qrz/
 │   ├── db/data/                # Arquivos CSV originais da carga
 │   ├── migrations/             # Migrações DDL e script de carga dos dados
 │   ├── src/
-│   │   ├── auth/               # Autenticação JWT, cookies HttpOnly e guards
-│   │   ├── database/           # Pool do PostgreSQL via driver nativo pg
-│   │   ├── titulos/            # Consulta de pendências e cálculo de saldo
-│   │   └── usuarios/           # Acesso ao cadastro de usuários e hash
+│   │   ├── controllers/        # Controladores REST (Auth, Titulos)
+│   │   ├── services/           # Regras de negócio e cálculos de saldo
+│   │   ├── modules/            # Módulos NestJS (App, Auth, Titulos, Usuarios, Database)
+│   │   ├── repositories/       # Camada de persistência SQL via driver pg
+│   │   ├── guards/             # Guardas de rota (JWT Auth Guard)
+│   │   ├── decorators/         # Decorators customizados (@CurrentUser, @Public)
+│   │   ├── strategies/         # Estratégia Passport JWT
+│   │   ├── dto/                # Data Transfer Objects com validação class-validator
+│   │   ├── interfaces/         # Contratos e tipos de dados do domínio
+│   │   └── main.ts             # Inicialização do NestJS, Helmet e Rate Limiting
 │   └── test/                   # Testes de integração E2E com Supertest
 └── web/                        # Aplicação Next.js (Frontend)
     ├── Dockerfile              # Build multi-stage do Next.js 15
     ├── middleware.ts           # Proteção de rotas e controle de sessão
-    ├── next.config.mjs         # Proxy reverso interno (/api/* -> backend)
+    ├── next.config.mjs         # Proxy reverso interno (/api/* -> backend) e loadEnv
     └── src/
-        ├── app/                # Rotas (login e dashboard de pendências)
-        ├── components/         # Resumo, tabela desktop, cards mobile e paginação
-        └── lib/                # Cliente HTTP e utilitários de formatação
+        ├── app/                # App Router (login e dashboard de pendências)
+        ├── components/
+        │   ├── layout/         # Componentes estruturais (Header, navegação)
+        │   ├── titulos/        # Componentes de domínio (ResumoCards, TituloTabela, TituloCard)
+        │   └── ui/             # Componentes base (StatusBadge, Pagination)
+        ├── lib/                # Cliente HTTP tipado e utilitários de formatação
+        └── types/              # Definições de tipos TypeScript compartilhadas
 ```
 
 ### Demonstração visual da aplicação
