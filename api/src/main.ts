@@ -1,11 +1,15 @@
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Confia no primeiro proxy reverso (Next.js / Docker) para leitura correta de IP e rate limiting
+  app.set('trust proxy', 1);
 
   app.use(helmet());
   app.use(cookieParser());

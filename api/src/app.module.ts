@@ -15,7 +15,7 @@ import { TitulosModule } from './titulos/titulos.module';
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 10,
+        limit: 60,
       },
     ]),
     DatabaseModule,

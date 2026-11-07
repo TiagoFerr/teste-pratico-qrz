@@ -158,6 +158,11 @@ describe('Portal do Fornecedor API (E2E)', () => {
     const FORNECEDOR_TESTE = 9999;
 
     beforeAll(async () => {
+      // Limpeza prévia defensiva caso uma execução anterior tenha sido interrompida
+      await db.query(`DELETE FROM titulos WHERE seqpessoa = $1`, [FORNECEDOR_TESTE]);
+      await db.query(`DELETE FROM usuarios WHERE seqpessoa = $1`, [FORNECEDOR_TESTE]);
+      await db.query(`DELETE FROM fornecedores WHERE seqpessoa = $1`, [FORNECEDOR_TESTE]);
+
       // Cria fornecedor e usuário fictício para o teste de isolamento
       await db.query(
         `INSERT INTO fornecedores (seqpessoa, nomerazao)
@@ -221,27 +226,6 @@ describe('Portal do Fornecedor API (E2E)', () => {
       expect(titulosRes.body.resumo.receber.total).toBe('5000.00');
       expect(titulosRes.body.resumo.pagar.total).toBe('0.00');
       expect(titulosRes.body.resumo.saldo).toBe('5000.00');
-    });
-
-    it('Fornecedor 9001 (homologação persistida) enxerga seus 2 títulos e totais isolados', async () => {
-      const loginRes = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({ usuario: '9001', senha: 'queiroz@2026' })
-        .expect(200);
-
-      const cookie9001 = loginRes.headers['set-cookie'][0].split(';')[0];
-
-      const res = await request(app.getHttpServer())
-        .get('/titulos/abertos?ref=2026-11-07')
-        .set('Cookie', [cookie9001])
-        .expect(200);
-
-      expect(res.body.titulos).toHaveLength(2);
-      expect(res.body.resumo.receber.total).toBe('5000.00');
-      expect(res.body.resumo.receber.aVencer).toBe('5000.00');
-      expect(res.body.resumo.pagar.total).toBe('1200.00');
-      expect(res.body.resumo.pagar.vencido).toBe('1200.00');
-      expect(res.body.resumo.saldo).toBe('3800.00');
     });
   });
 

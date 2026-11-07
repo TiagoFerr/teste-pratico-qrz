@@ -20,8 +20,8 @@ function readCsvLines(filePath) {
 }
 
 function parseDecimal(val) {
-  if (!val) return 0;
-  return parseFloat(val.replace(',', '.'));
+  if (!val || typeof val !== 'string' || val.trim() === '') return '0.00';
+  return val.replace(/\./g, '').replace(',', '.').trim();
 }
 
 function parseDate(val) {
