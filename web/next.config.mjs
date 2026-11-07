@@ -1,8 +1,9 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadEnvConfig } from '@next/env';
+import nextEnv from '@next/env';
 
 // Garante o carregamento do .env da raiz do monorepo tanto em dev local quanto em container
+const { loadEnvConfig } = nextEnv;
 const projectDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 loadEnvConfig(projectDir);
 

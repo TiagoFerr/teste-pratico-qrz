@@ -22,6 +22,7 @@ teste-pratico-qrz/
 ├── package.json                # Gerenciamento de workspaces npm (api e web)
 ├── .env.example                # Modelo de variáveis de ambiente
 ├── README.md                   # Documentação técnica e instruções
+├── docs/screenshots/           # Capturas de tela (desktop e mobile)
 ├── api/                        # Aplicação NestJS (Backend)
 │   ├── Dockerfile              # Build multi-stage e runner com migrações automáticas
 │   ├── tsconfig.build.json     # Configuração de compilação para produção
@@ -36,12 +37,22 @@ teste-pratico-qrz/
 └── web/                        # Aplicação Next.js (Frontend)
     ├── Dockerfile              # Build multi-stage do Next.js 15
     ├── middleware.ts           # Proteção de rotas e controle de sessão
-    ├── next.config.ts          # Proxy reverso interno (/api/* -> backend)
+    ├── next.config.mjs         # Proxy reverso interno (/api/* -> backend)
     └── src/
         ├── app/                # Rotas (login e dashboard de pendências)
         ├── components/         # Resumo, tabela desktop, cards mobile e paginação
         └── lib/                # Cliente HTTP e utilitários de formatação
 ```
+
+### Demonstração visual da aplicação
+
+| Login (Desktop) | Pendências (Desktop) |
+|:---:|:---:|
+| ![Login Desktop](docs/screenshots/login-desktop.png) | ![Pendências Desktop](docs/screenshots/titulos-desktop.png) |
+
+| Login (Mobile) | Pendências (Mobile) |
+|:---:|:---:|
+| ![Login Mobile](docs/screenshots/login-mobile.png) | ![Pendências Mobile](docs/screenshots/titulos-mobile.png) |
 
 ---
 
