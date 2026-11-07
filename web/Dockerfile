@@ -27,6 +27,7 @@ COPY web/package.json ./web/
 
 RUN npm ci --workspace=web --omit=dev --include-workspace-root
 
+COPY --from=builder /app/web/next.config.mjs ./web/next.config.mjs
 COPY --from=builder /app/web/.next ./web/.next
 COPY --from=builder /app/web/public ./web/public
 
