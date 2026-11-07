@@ -11,6 +11,10 @@ export class TitulosController {
     @CurrentUser() user: CurrentUserPayload,
     @Query('ref') dataRef?: string,
   ): Promise<TitulosAbertosResponse> {
-    return this.titulosService.getTitulosAbertos(user.seqpessoa, dataRef);
+    // Parâmetro de corte de data restrito aos ambientes de teste e desenvolvimento
+    const allowCustomRef = process.env.NODE_ENV !== 'production';
+    const effectiveRef = allowCustomRef ? dataRef : undefined;
+
+    return this.titulosService.getTitulosAbertos(user.seqpessoa, effectiveRef);
   }
 }
