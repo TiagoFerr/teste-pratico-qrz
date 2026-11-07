@@ -46,13 +46,11 @@ teste-pratico-qrz/
 
 ### Demonstração visual da aplicação
 
-| Login (Desktop) | Pendências (Desktop) |
-|:---:|:---:|
-| ![Login Desktop](docs/screenshots/login-desktop.png) | ![Pendências Desktop](docs/screenshots/titulos-desktop.png) |
-
-| Login (Mobile) | Pendências (Mobile) |
-|:---:|:---:|
-| ![Login Mobile](docs/screenshots/login-mobile.png) | ![Pendências Mobile](docs/screenshots/titulos-mobile.png) |
+| Visão | Desktop | Mobile |
+|:---|:---:|:---:|
+| **Login** | ![Login Desktop](docs/screenshots/login-web.png) | ![Login Mobile](docs/screenshots/login-mobile.png) |
+| **Resumo Financeiro** | ![Resumo Desktop](docs/screenshots/plataforma-web.png) | ![Resumo Mobile](docs/screenshots/plataforma-mobile.png) |
+| **Pendências em Aberto** | ![Tabela Desktop](docs/screenshots/tabela-web.png) | ![Cards Mobile](docs/screenshots/tabela-mobile.png) |
 
 ---
 
