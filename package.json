@@ -1,0 +1,19 @@
+{
+  "name": "portal-fornecedor-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "api",
+    "web"
+  ],
+  "scripts": {
+    "dev:api": "npm --workspace=api run start:dev",
+    "dev:web": "npm --workspace=web run dev",
+    "build:api": "npm --workspace=api run build",
+    "build:web": "npm --workspace=web run build",
+    "build": "npm run build --workspaces",
+    "test:api": "npm --workspace=api test",
+    "migrate:up": "npm --workspace=api run migrate:up",
+    "migrate:down": "npm --workspace=api run migrate:down"
+  }
+}
