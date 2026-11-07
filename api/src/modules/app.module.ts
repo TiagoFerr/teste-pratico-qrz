@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { DatabaseModule } from './database/database.module';
-import { UsuariosModule } from './usuarios/usuarios.module';
-import { AuthModule } from './auth/auth.module';
-import { TitulosModule } from './titulos/titulos.module';
+import { DatabaseModule } from './database.module';
+import { UsuariosModule } from './usuarios.module';
+import { AuthModule } from './auth.module';
+import { TitulosModule } from './titulos.module';
 
 @Module({
   imports: [

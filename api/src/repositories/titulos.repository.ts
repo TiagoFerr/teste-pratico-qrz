@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseService } from '../database/database.service';
+import { DatabaseService } from '../services/database.service';
 
 export interface TituloRow {
   seqtitulo: string;

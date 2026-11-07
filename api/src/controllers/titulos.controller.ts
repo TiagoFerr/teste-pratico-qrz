@@ -1,6 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { TitulosService, TitulosAbertosResponse } from './titulos.service';
-import { CurrentUser, CurrentUserPayload } from '../auth/current-user.decorator';
+import { TitulosService } from '../services/titulos.service';
+import { TitulosAbertosResponse } from '../interfaces/titulos.interface';
+import { CurrentUser, CurrentUserPayload } from '../decorators/current-user.decorator';
 
 @Controller('titulos')
 export class TitulosController {

@@ -1,31 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { TitulosRepository } from './titulos.repository';
+import { TitulosRepository } from '../repositories/titulos.repository';
+import { ResumoGrupo, TitulosAbertosResponse } from '../interfaces/titulos.interface';
 
-export interface ResumoGrupo {
-  qtd: number;
-  total: string;
-  vencido: string;
-  aVencer: string;
-}
-
-export interface TitulosAbertosResponse {
-  referencia: string;
-  resumo: {
-    receber: ResumoGrupo;
-    pagar: ResumoGrupo;
-    saldo: string;
-  };
-  titulos: Array<{
-    seqtitulo: string;
-    especie: string;
-    tipo: 'O' | 'D' | null;
-    emissao: string;
-    vencimento: string;
-    valorAberto: string;
-    vencido: boolean;
-    dias: number;
-  }>;
-}
+export { ResumoGrupo, TitulosAbertosResponse };
 
 @Injectable()
 export class TitulosService {

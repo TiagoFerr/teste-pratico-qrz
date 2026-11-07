@@ -3,8 +3,8 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import * as cookieParser from 'cookie-parser';
 import * as bcrypt from 'bcryptjs';
-import { AppModule } from '../src/app.module';
-import { DatabaseService } from '../src/database/database.service';
+import { AppModule } from '../src/modules/app.module';
+import { DatabaseService } from '../src/services/database.service';
 
 describe('Portal do Fornecedor API (E2E)', () => {
   let app: INestApplication;

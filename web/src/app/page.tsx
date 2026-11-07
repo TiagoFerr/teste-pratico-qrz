@@ -11,11 +11,13 @@ import {
 } from 'lucide-react';
 import { apiFetch } from '@/lib/api';
 import { CurrentUser, TitulosAbertosResponse } from '@/types';
-import { Header } from '@/components/Header';
-import { ResumoCards } from '@/components/ResumoCards';
-import { TituloTabela } from '@/components/TituloTabela';
-import { TituloCard } from '@/components/TituloCard';
-import { Pagination } from '@/components/Pagination';
+import {
+  Header,
+  ResumoCards,
+  TituloTabela,
+  TituloCard,
+  Pagination,
+} from '@/components';
 import { formatDate } from '@/lib/format';
 
 export default function DashboardPage() {
