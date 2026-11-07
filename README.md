@@ -318,14 +318,3 @@ Os testes E2E executam contra o banco de dados configurado no `.env`:
 - Abatimento de pagamentos parciais (ex.: título 85277710).
 - **Isolamento de dados (Prevenção a IDOR)**: o teste cria temporariamente um fornecedor fictício (`9999`) com título próprio, autentica ambos os usuários de forma independente, comprova que um fornecedor não tem acesso aos dados do outro e remove os registros de teste de forma idempotente em `beforeAll` e `afterAll`.
 
----
-
-## 11. O que faria com mais tempo
-
-- **Fluxo de primeiro acesso**: tela obrigatória para troca da senha padrão no primeiro login do fornecedor.
-- **Recuperação de acesso**: fluxo de "esqueci minha senha" com envio de token temporário por e-mail ou SMS.
-- **Revogação ativa de sessão**: armazenamento de sessões ativas ou lista de bloqueio de tokens em memória compartilhada (Redis), permitindo revogar sessões no momento do logout.
-- **Exportação de relatórios**: botões para download da posição financeira em formato PDF e planilha Excel.
-- **Detalhamento do título**: modal ou página interna exibindo histórico de notas fiscais associadas e parcelas pagas.
-- **Auditoria de acessos**: tabela de logs para registrar data, horário e IP de cada login efetuado por fornecedor.
-- **Pipeline de Integração Contínua (CI)**: workflow no GitHub Actions para validação automatizada de lint, build e testes a cada pull request.
