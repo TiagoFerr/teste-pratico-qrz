@@ -18,7 +18,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         ExtractJwt.fromAuthHeaderAsBearerToken(),
       ]),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET', 'super-secret-jwt-key-for-development'),
+      secretOrKey: configService.get<string>(
+        'JWT_SECRET',
+        'super-secret-jwt-key-for-development',
+      ),
     });
   }
 
@@ -27,7 +30,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Token inválido');
     }
     return {
-      seqpessoa: payload.sub,
+      seqpessoa: Number(payload.sub),
       nomerazao: payload.nomerazao,
     };
   }
