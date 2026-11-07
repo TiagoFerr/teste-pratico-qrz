@@ -13,6 +13,7 @@
     "build:web": "npm --workspace=web run build",
     "build": "npm run build --workspaces",
     "test:api": "npm --workspace=api test",
+    "test:e2e": "npm --workspace=api run test:e2e",
     "migrate:up": "npx node-pg-migrate up -m api/migrations --envPath .env",
     "migrate:down": "npx node-pg-migrate down -m api/migrations --envPath .env"
   }

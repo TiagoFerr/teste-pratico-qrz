@@ -89,6 +89,8 @@ Todas as aplicações do monorepo (API, Frontend e comandos de migração) utili
 | `NEXT_PUBLIC_API_URL` | `http://localhost:3000/api` | Rota base de chamadas no navegador |
 | `API_INTERNAL_URL` | `http://localhost:3001` | Destino do proxy reverso (`http://localhost:3001` localmente; `http://api:3001` no Docker) |
 
+> **Observação sobre Docker vs Execução Local:** O arquivo `.env` da raiz define `localhost` por padrão para suportar a execução direta no host (Método 2). Ao subir o ambiente via Docker Compose (Método 1), o `docker-compose.yml` sobrescreve explicitamente essas variáveis dentro dos containers: `DATABASE_URL` utiliza o host `db` (`db:5432`) e `API_INTERNAL_URL` aponta para `http://api:3001`, viabilizando a resolução interna pela rede virtual do Compose.
+
 ---
 
 ## 4. Como rodar o projeto
@@ -247,27 +249,30 @@ Conforme os dados do CSV fornecido pelo Grupo Queiroz:
 2. **Prevenção a IDOR (isolamento estrito de dados)**:
    O código do fornecedor (`seqpessoa`) é extraído exclusivamente do token JWT no backend (`@CurrentUser()`). Nenhum endpoint aceita `seqpessoa` vindo de parâmetros de URL, query string ou corpo da requisição.
 
-3. **Autenticação em cookie HttpOnly**:
+3. **Armazenamento de senhas com `bcrypt`**:
+   As senhas dos fornecedores são armazenadas exclusivamente em formato de hash criptográfico gerado com `bcrypt` (10 rounds de salt). O algoritmo foi adotado por ser padrão consagrado para proteção contra ataques de dicionário, rainbow tables e vazamentos de banco, oferecendo resistência a força bruta com custo de CPU equilibrado.
+
+4. **Autenticação em cookie HttpOnly**:
    O token JWT trafega no cookie `access_token` configurado com `httpOnly: true`, `sameSite: 'lax'` e `path: '/'`. Em produção utiliza `secure: true`, operando com `secure: false` em ambiente de desenvolvimento local para suportar HTTP em `localhost`.
 
-4. **Proxy reverso no Next.js**:
-   Configurado no `next.config.ts` através de `rewrites`. O navegador requisita `/api/*` diretamente na origem `http://localhost:3000`, eliminando atritos de CORS e simplificando o tráfego do cookie de sessão.
+5. **Proxy reverso no Next.js**:
+   Configurado no `next.config.mjs` através de `rewrites`. O navegador requisita `/api/*` diretamente na origem `http://localhost:3000`, eliminando atritos de CORS e simplificando o tráfego do cookie de sessão.
 
-5. **Proteção contra enumeração de usuários por tempo**:
+6. **Proteção contra enumeração de usuários por tempo**:
    Quando um código de fornecedor inexistente tenta realizar login, a API executa uma checagem de hash fictícia contra uma constante antes de responder o erro 401 ("Usuário ou senha inválidos"). Isso iguala o tempo de resposta em relação a usuários válidos com senha incorreta.
 
-6. **Segurança de borda e Rate Limiting**:
+7. **Segurança de borda e Rate Limiting**:
    - `helmet` configurado para aplicação de cabeçalhos de proteção HTTP.
    - `app.set('trust proxy', 1)` configurado no Express para extrair o IP real através dos cabeçalhos `X-Forwarded-For` do proxy do Next.js.
    - `@nestjs/throttler` configurado com limite de 30 requisições por minuto por IP na rota de login, retornando HTTP 429 em caso de abuso sem prejudicar testes manuais de avaliação.
    - `ValidationPipe` global com `whitelist: true` e `forbidNonWhitelisted: true`, rejeitando campos não declarados no DTO.
 
-7. **Tratamento de valores monetários sem ponto flutuante**:
+8. **Tratamento de valores monetários sem ponto flutuante**:
    O banco de dados utiliza colunas `NUMERIC(14,2)`. A carga e a API trafegam esses valores como strings decimais formatadas (`"498411.01"`), evitando os erros clássicos de arredondamento IEEE-754 do JavaScript. A conversão para `R$ 1.234,56` ocorre exclusivamente na camada de apresentação via `Intl.NumberFormat('pt-BR')`.
 
-8. **Design de interface, UX e Paginação**:
+9. **Design de interface, UX e Paginação**:
    - **Responsividade total**: a tabela desktop converte-se em cards individuais empilhados em telas menores (`TituloCard`), proporcionando leitura confortável em dispositivos móveis.
-   - **Paginação no cliente**: como o dataset de 92 títulos representa um payload leve (~15 KB compactado), a paginação (10, 20, 50 ou 100 itens por página) ocorre no cliente. Isso permite trocas de página instantâneas sem novas requisições de rede.
+   - **Paginação no cliente**: como o dataset de 92 títulos representa um payload leve, a paginação (10, 20, 50 ou 100 itens por página) ocorre no cliente. Isso permite trocas de página instantâneas sem novas requisições de rede.
    - **Totais sempre globais**: os cartões de resumo superior (A Receber, A Pagar e Saldo Líquido) são calculados no banco de dados sobre a totalidade dos títulos do fornecedor, nunca restritos à página exibida.
    - **Acessibilidade nos status**: os badges combinam cores contrastantes, ícones semânticos e texto descritivo ("Vencido há X dias", "Vence hoje", "Vence em X dias").
    - **Estados da tela**: a interface conta com skeletons durante o carregamento e card de erro com botão para repetição da consulta.
@@ -277,7 +282,7 @@ Conforme os dados do CSV fornecido pelo Grupo Queiroz:
 ## 9. Interpretações e regras de negócio
 
 1. **Direção da dívida (Obrigações O vs Direitos D)**:
-   O enunciado traz uma ambiguidade conceitual ao citar tanto "quanto deve ao Queiroz" quanto o "total em aberto com o Grupo Queiroz". O campo `obrigdireito` separa obrigações (`O`, onde o Queiroz deve ao fornecedor) de direitos (`D`, onde o fornecedor deve ao Queiroz por devoluções ou verbas comerciais). Diante dessa duplicidade, a interface não restringe a consulta a apenas um lado: exibe os dois blocos separadamente e calcula o **saldo líquido (`O - D`)**, informando o montante final favorável ao fornecedor.
+   O enunciado traz uma ambiguidade conceitual ao citar tanto "quanto deve ao Queiroz" quanto o "total em aberto com o Grupo Queiroz". O campo `obrigdireito` separa obrigações (`O`, onde o Queiroz deve ao fornecedor) de direitos (`D`, onde o fornecedor deve ao Queiroz por devoluções ou verbas comerciais). Diante dessa duplicidade, a interface não restringe a consulta a apenas um lado: exibe os dois blocos separadamente e calcula o **saldo líquido (`O - D`)**, informando o saldo a favor do fornecedor (ou do Grupo Queiroz, se negativo).
 
 2. **Critério de vencimento e data atual**:
    Um título é considerado vencido quando `dtavencimento < data_referencia`. Títulos que vencem no mesmo dia da referência são considerados **a vencer**, pois o pagamento pode ocorrer até o encerramento do expediente bancário.
@@ -308,7 +313,7 @@ Cobre o cálculo do saldo líquido, agrupamento dos resumos e tratamento de forn
 
 ### Testes de integração E2E (comportamento de ponta a ponta)
 ```bash
-npm --workspace=api run test:e2e
+npm run test:e2e
 ```
 Os testes E2E executam contra o banco de dados configurado no `.env`:
 - Rejeição de logins inválidos e login bem-sucedido com emissão de cookie HttpOnly.
@@ -317,4 +322,17 @@ Os testes E2E executam contra o banco de dados configurado no `.env`:
 - Caso limite dos 3 títulos que vencem na data de referência (`vencido: false`, `dias: 0`).
 - Abatimento de pagamentos parciais (ex.: título 85277710).
 - **Isolamento de dados (Prevenção a IDOR)**: o teste cria temporariamente um fornecedor fictício (`9999`) com título próprio, autentica ambos os usuários de forma independente, comprova que um fornecedor não tem acesso aos dados do outro e remove os registros de teste de forma idempotente em `beforeAll` e `afterAll`.
+
+---
+
+## 11. O que faria com mais tempo
+
+- Troca obrigatória da senha padrão no primeiro acesso e fluxo "esqueci minha senha".
+- Revogação de sessão no servidor (Redis ou blocklist), para o logout invalidar o token.
+- Exportação da posição financeira em PDF e Excel.
+- Detalhe do título (histórico de pagamentos).
+- Notificações em tempo real via SSE (Server-Sent Events) para alertar sobre novos títulos ou liquidações.
+- Paginação no servidor, se o volume por fornecedor crescer.
+- CI com GitHub Actions (lint, build e testes) e testes E2E do front (Playwright).
+- Logs estruturados e auditoria de acessos.
 
