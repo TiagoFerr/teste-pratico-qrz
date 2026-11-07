@@ -16,36 +16,43 @@ O projeto é um monorepo dividido em duas aplicações principais e o banco de d
 
 ```
 teste-pratico-qrz/
-├── docker-compose.yml          # Serviço do PostgreSQL 16
+├── docker-compose.yml          # Orquestração completa (db, api e web)
+├── .dockerignore               # Otimização de contexto de build Docker
 ├── package.json                # Gerenciamento de workspaces npm (api e web)
 ├── .env.example                # Modelo de variáveis de ambiente
 ├── README.md                   # Documentação técnica e instruções
-├── PLANO.md                    # Plano de aplicação original
-├── api/                        # Aplicação NestJS
+├── api/                        # Aplicação NestJS (Backend)
+│   ├── Dockerfile              # Build multi-stage e execução de migrations
+│   ├── tsconfig.build.json     # Configuração de build de produção
 │   ├── db/data/                # Arquivos CSV originais da carga
-│   ├── migrations/             # Migrações DDL e script de carga
+│   ├── migrations/             # Migrações DDL e script de carga dos dados
 │   ├── src/
 │   │   ├── auth/               # Autenticação, JWT, cookies e guards
 │   │   ├── database/           # Pool do PostgreSQL via driver nativo
 │   │   ├── titulos/            # Consulta de pendências e cálculo de saldo
 │   │   └── usuarios/           # Acesso ao cadastro de usuários
 │   └── test/                   # Testes de integração E2E com Supertest
-└── web/                        # Aplicação Next.js
-    ├── middleware.ts           # Proteção de rotas e redirecionamento de sessão
-    ├── next.config.ts          # Proxy reverso (/api/* -> porta 3001)
+└── web/                        # Aplicação Next.js (Frontend)
+    ├── Dockerfile              # Build multi-stage otimizado Next.js 15
+    ├── middleware.ts           # Proteção de rotas e controle de sessão
+    ├── next.config.ts          # Proxy reverso interno (/api/* -> http://api:3001)
     └── src/
         ├── app/                # Rotas (login e dashboard de pendências)
         ├── components/         # Resumo, tabela, cards mobile e paginação
-        └── lib/                # Cliente HTTP e formatação monetária/datas
+        └── lib/                # Cliente HTTP e utilitários de formatação
 ```
 
 ---
 
 ## 2. Pré-requisitos
 
+Para rodar via container (recomendado):
+- **Docker e Docker Compose** (via Docker Desktop ativo)
+
+Caso opte por rodar em modo desenvolvimento local fora de containers:
 - **Node.js**: versão 20 ou superior (testado no **Node.js v22.13.0** em ambiente Windows 11)
 - **npm**: versão 10 ou superior
-- **Docker e Docker Compose** (via Docker Desktop ativo)
+- **Docker** (para subir o container do PostgreSQL)
 
 ---
 
@@ -77,43 +84,62 @@ Também é mantida uma cópia em `api/.env` para execução direta das migraçõ
 
 ---
 
-## 4. Como rodar do zero
+## 4. Como rodar o projeto
 
-### Passo 1: Iniciar o banco de dados
-Suba o container do PostgreSQL:
+### Método 1: Execução completa via Docker Compose (Recomendado)
+
+É o caminho mais rápido para avaliar a aplicação. Um único comando compila as imagens, inicia o PostgreSQL 16 (com timezone `America/Fortaleza`), executa as migrações, valida a carga dos 92 títulos e inicializa o backend e o frontend:
+
+```bash
+docker compose up --build -d
+```
+
+Após o build e a inicialização (cerca de 30 a 50 segundos no primeiro build):
+- **Frontend**: [http://localhost:3000](http://localhost:3000)
+- **API**: [http://localhost:3001](http://localhost:3001)
+- **Banco de Dados**: `localhost:5432`
+
+Para acompanhar os logs de inicialização e carga em tempo real:
+```bash
+docker compose logs -f
+```
+
+Para encerrar os serviços:
+```bash
+docker compose down
+```
+
+---
+
+### Método 2: Desenvolvimento local (com hot-reload)
+
+Caso deseje executar o código localmente na máquina com hot-reload ativo:
+
+#### Passo 1: Iniciar apenas o banco de dados
 ```bash
 docker compose up -d db
 ```
-O container inicia com o fuso padrão do banco em `America/Fortaleza` e executa um teste de integridade (`pg_isready`).
 
-### Passo 2: Instalar as dependências
-Na raiz do monorepo, execute o comando que instala as dependências dos workspaces:
+#### Passo 2: Instalar as dependências
+Na raiz do monorepo:
 ```bash
 npm install
 ```
 
-### Passo 3: Executar as migrações e a carga dos CSVs
-Execute o comando de migração:
+#### Passo 3: Executar as migrações e carga dos CSVs
 ```bash
 npm run migrate:up
 ```
-O script utiliza `node -r dotenv/config` para carregar as variáveis de ambiente e processa os arquivos de `api/migrations/`.
 
-### Passo 4: Iniciar as aplicações
-
-Abra dois terminais na raiz:
-
-**Terminal 1 (API NestJS):**
-```bash
-npm run dev:api
-```
-A API iniciará na porta 3001 (`http://localhost:3001`).
-
-**Terminal 2 (Frontend Next.js):**
-```bash
-npm run dev:web
-```
-O frontend estará acessível em `http://localhost:3000`.
+#### Passo 4: Iniciar as aplicações em terminais separados
+- **Terminal 1 (API NestJS):**
+  ```bash
+  npm run dev:api
+  ```
+- **Terminal 2 (Frontend Next.js):**
+  ```bash
+  npm run dev:web
+  ```
 
 ---
 

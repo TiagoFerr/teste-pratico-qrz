@@ -22,5 +22,39 @@ services:
       timeout: 5s
       retries: 5
 
+  api:
+    container_name: portal_fornecedor_api
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@db:5432/${DB_NAME:-portal_fornecedor}
+      PORT: 3001
+      JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-key-for-development-only-replace-in-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      NODE_ENV: ${NODE_ENV:-development}
+    ports:
+      - "3001:3001"
+
+  web:
+    container_name: portal_fornecedor_web
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_started
+    environment:
+      PORT: 3000
+      API_INTERNAL_URL: http://api:3001
+    ports:
+      - "3000:3000"
+
 volumes:
   pgdata:
