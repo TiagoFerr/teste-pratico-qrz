@@ -158,19 +158,32 @@ A migração `004_seed_dados.js` processa os dois arquivos fornecidos no teste:
    - Gera o registro do fornecedor na tabela `fornecedores` e cria seu usuário na tabela `usuarios` com o hash da senha padrão.
 
 ### Validação de contagem
-Ao final da carga, a migração faz uma conferência das contagens no banco:
+Ao final da carga do CSV, a migração `004` faz uma conferência estrita das contagens no banco:
 - 30 espécies
 - 1 fornecedor
 - 92 títulos
 
 Se houver qualquer divergência em relação a esses números, a transação sofre rollback imediato.
 
+### Carga de homologação para teste visual de isolamento (`005_seed_fornecedor_homologacao.js`)
+Para que o avaliador possa comprovar o isolamento multi-fornecedor diretamente na interface web sem alterar o banco manualmente, a migração `005` cadastra um segundo fornecedor com dados controlados:
+- **Fornecedor**: `9001` – `FORNECEDOR HOMOLOGACAO LTDA`
+- **2 títulos próprios**:
+  1. Duplicata a receber (espécie `DPFORN`, tipo `O`): R$ 5.000,00 a vencer
+  2. Devolução a pagar (espécie `DVFORN`, tipo `D`): R$ 1.200,00 vencido
+
 ---
 
 ## 6. Credenciais de teste
 
-- **Código do fornecedor**: `4827`
-- **Senha padrão**: `queiroz@2026`
+A base possui dois fornecedores disponíveis para conferência:
+
+| Fornecedor | Razão Social | Senha | Qtd. Títulos | Saldo Líquido (em 07/11/2026) | Finalidade |
+|---|---|---|---|---|---|
+| **`4827`** | `DISTRIBUIDORA EXEMPLO ALIMENTOS LTDA` | `queiroz@2026` | 92 | **R$ 490.643,18** | Base oficial dos CSVs fornecidos no enunciado |
+| **`9001`** | `FORNECEDOR HOMOLOGACAO LTDA` | `queiroz@2026` | 2 | **R$ 3.800,00** | Validação visual do isolamento de dados no navegador |
+
+> Para verificar o isolamento multi-fornecedor, faça login com o fornecedor `4827`, confira a lista de 92 títulos e o saldo de R$ 490.643,18, clique em **Sair** e em seguida faça login com o fornecedor `9001`. Apenas os 2 títulos do fornecedor `9001` serão exibidos, sem nenhum registro vazado da Distribuidora Exemplo.
 
 ---
 
